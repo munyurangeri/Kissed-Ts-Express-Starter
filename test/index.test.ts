@@ -1,12 +1,16 @@
 import * as mocha from 'mocha';
 import * as chai from 'chai';
 import * as superagent from "superagent";
-
 import * as http from 'http';
+import { config } from "dotenv";
 
 import * as server from "../src/server";
 
-const xs = http.createServer(server.server());
+config();
+
+const dbUrl = process.env.TEST_DB;
+
+const xs = http.createServer(server.server(dbUrl));
 
 const expect = chai.expect;
 
@@ -14,13 +18,13 @@ describe('baseRoute', () => {
 
     before(() => {
         xs.listen(3000);
-        xs.on('error', () => {console.log("So bad! Something went wrong.")});
-        xs.on('listening',  () => {console.log("Cool! we are on 3000 port!")});
+        // xs.on('error', () => {console.log("So bad! Something went wrong.")});
+        // xs.on('listening',  () => {console.log("Cool! we are on 3000 port!")});
        
     });
 
     after(() => {
-        console.log("We are done! Let's tear down resources.")
+
         xs.close();
     });
 
@@ -31,9 +35,9 @@ describe('baseRoute', () => {
             
             let result: any;
             result = JSON.parse(res.text);
-            console.log(result.data.description);
+
             expect(result.data.description).to.eql('Hola, Mondo! Xenia API v1!');
-            
+
             done();
         })
     });
