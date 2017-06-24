@@ -1,6 +1,6 @@
 import {Request, Response, Router, NextFunction} from "express";
 import * as bodyParser from "body-parser"; 
-import { Document, Error} from "mongoose";
+import { Error, Model, PaginateModel, PaginateResult} from "mongoose";
 import * as status from "http-status";
 import { invoke } from "wagner-core";
 import { IUserModel } from "../models/user.interface" 
@@ -21,10 +21,10 @@ export const user = function(){
     api.use(bodyParser.json());
     api.use(bodyParser.urlencoded({ extended: true }));
 
-    api.get('', invoke((User: any) => {
+    api.get('', invoke((User: PaginateModel<IUserModel>) => {
         return (req: Request, res: Response) => {
             User.
-                paginate({}, {}, (error: Error, data: Document) => {
+                paginate({}, {}, (error: Error, data: PaginateResult<IUserModel>) => {
                     if (error){
                         return res.
                             status(status.INTERNAL_SERVER_ERROR).
@@ -42,7 +42,7 @@ export const user = function(){
         }        
     }));
 
-    api.get('/:id', invoke((User: any) => {
+    api.get('/:id', invoke((User: Model<IUserModel>) => {
         return (req: Request, res: Response) => {
             User.
                 findOne({_id: req.params.id}).
@@ -65,10 +65,10 @@ export const user = function(){
         }        
     }));
 
-    api.get('/pages/:page', invoke((User: any) => {
+    api.get('/pages/:page', invoke((User: PaginateModel<IUserModel>) => {
         return (req: Request, res: Response) => {
             User.
-                paginate({}, {page: req.params.page, limit:3}, (error: Error, data: Document) => {
+                paginate({}, {page: req.params.page, limit:3}, (error: Error, data: PaginateResult<IUserModel>) => {
                     if (error){
                         return res.
                             status(status.INTERNAL_SERVER_ERROR).
